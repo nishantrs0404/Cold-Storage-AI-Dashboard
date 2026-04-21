@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cold Storage AI Monitor</title>
+    <meta name="description" content="AI-Powered Cold Storage Monitoring Dashboard with Real-Time Sensor Data">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❄️</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">❄️</div>
+            <div>
+                <h1>Cold Storage AI Monitor</h1>
+                <p class="header-sub">Real-Time IoT Monitoring System</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="connection-status" id="connStatus">
+                <span class="dot"></span> <span id="connText">Connecting...</span>
+            </div>
+            <div class="timestamp" id="lastUpdated">--</div>
+        </div>
+    </header>
+
+    <!-- ALERT BAR -->
+    <div class="alert-bar" id="alertBar" style="display:none;">
+        <span class="alert-icon">⚠️</span>
+        <span id="alertMsg">Danger detected!</span>
+        <button class="alert-close" onclick="document.getElementById('alertBar').style.display='none'">✕</button>
+    </div>
+
+    <!-- STATUS SECTION -->
+    <section class="status-section">
+        <div class="status-card" id="statusCard">
+            <div class="status-badge" id="statusBadge">SAFE</div>
+            <div class="status-details">
+                <div class="status-row">
+                    <span class="status-label">Confidence</span>
+                    <span class="status-value" id="confidence">--</span>
+                </div>
+                <div class="status-row">
+                    <span class="status-label">Risk Level</span>
+                    <span class="status-value" id="riskLevel">--</span>
+                </div>
+                <div class="status-row">
+                    <span class="status-label">Risk Score</span>
+                    <div class="risk-bar-wrap">
+                        <div class="risk-bar" id="riskBar" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SENSOR CARDS -->
+    <section class="sensor-grid">
+        <div class="sensor-card temp-card" id="cardTemp">
+            <div class="sensor-icon">🌡️</div>
+            <div class="sensor-info">
+                <div class="sensor-name">Temperature</div>
+                <div class="sensor-val" id="valTemp">--</div>
+                <div class="sensor-unit">°C</div>
+            </div>
+            <div class="sensor-stats">
+                <span>Avg: <b id="avgTemp">--</b></span>
+                <span>Min: <b id="minTemp">--</b></span>
+                <span>Max: <b id="maxTemp">--</b></span>
+            </div>
+            <div class="mini-chart"><canvas id="miniTemp"></canvas></div>
+        </div>
+        <div class="sensor-card hum-card" id="cardHum">
+            <div class="sensor-icon">💧</div>
+            <div class="sensor-info">
+                <div class="sensor-name">Humidity</div>
+                <div class="sensor-val" id="valHum">--</div>
+                <div class="sensor-unit">%</div>
+            </div>
+            <div class="sensor-stats">
+                <span>Avg: <b id="avgHum">--</b></span>
+                <span>Min: <b id="minHum">--</b></span>
+                <span>Max: <b id="maxHum">--</b></span>
+            </div>
+            <div class="mini-chart"><canvas id="miniHum"></canvas></div>
+        </div>
+        <div class="sensor-card mq2-card" id="cardMQ2">
+            <div class="sensor-icon">🔥</div>
+            <div class="sensor-info">
+                <div class="sensor-name">MQ-2 Gas</div>
+                <div class="sensor-val" id="valMQ2">--</div>
+                <div class="sensor-unit">ppm</div>
+            </div>
+            <div class="sensor-stats">
+                <span>Avg: <b id="avgMQ2">--</b></span>
+                <span>Min: <b id="minMQ2">--</b></span>
+                <span>Max: <b id="maxMQ2">--</b></span>
+            </div>
+            <div class="mini-chart"><canvas id="miniMQ2"></canvas></div>
+        </div>
+        <div class="sensor-card mq135-card" id="cardMQ135">
+            <div class="sensor-icon">🌫️</div>
+            <div class="sensor-info">
+                <div class="sensor-name">MQ-135 Air</div>
+                <div class="sensor-val" id="valMQ135">--</div>
+                <div class="sensor-unit">ppm</div>
+            </div>
+            <div class="sensor-stats">
+                <span>Avg: <b id="avgMQ135">--</b></span>
+                <span>Min: <b id="minMQ135">--</b></span>
+                <span>Max: <b id="maxMQ135">--</b></span>
+            </div>
+            <div class="mini-chart"><canvas id="miniMQ135"></canvas></div>
+        </div>
+        <div class="sensor-card pred-card" id="cardPred">
+            <div class="sensor-icon">🧠</div>
+            <div class="sensor-info">
+                <div class="sensor-name">AI Prediction</div>
+                <div class="sensor-val" id="valPred">--</div>
+                <div class="sensor-unit" id="predConf">--</div>
+            </div>
+            <div class="sensor-stats">
+                <span>Model: <b>TinyML</b></span>
+                <span>Type: <b>NN</b></span>
+            </div>
+            <div class="mini-chart"><canvas id="miniPred"></canvas></div>
+        </div>
+    </section>
+
+    <!-- TIME RANGE SELECTOR -->
+    <section class="controls">
+        <div class="time-selector">
+            <button class="time-btn" data-minutes="5">5 min</button>
+            <button class="time-btn active" data-minutes="10">10 min</button>
+            <button class="time-btn" data-minutes="15">15 min</button>
+            <button class="time-btn" data-minutes="20">20 min</button>
+            <button class="time-btn" data-minutes="30">30 min</button>
+            <button class="time-btn" data-minutes="60">1 hr</button>
+            <button class="time-btn" data-minutes="120">2 hr</button>
+        </div>
+    </section>
+
+    <!-- CHARTS -->
+    <section class="charts-grid">
+        <div class="chart-card full-width">
+            <h3>All Sensors Combined</h3>
+            <canvas id="chartCombined"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Temperature Trend</h3>
+            <canvas id="chartTemp"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Humidity Trend</h3>
+            <canvas id="chartHum"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>MQ-2 Gas Level</h3>
+            <canvas id="chartMQ2"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>MQ-135 Air Quality</h3>
+            <canvas id="chartMQ135"></canvas>
+        </div>
+        <div class="chart-card full-width">
+            <h3>AI Prediction Confidence</h3>
+            <canvas id="chartPrediction"></canvas>
+        </div>
+    </section>
+
+    <!-- TREND TABLE -->
+    <section class="analytics-section">
+        <div class="analytics-card">
+            <h3>📊 Trend Analysis</h3>
+            <table class="trend-table" id="trendTable">
+                <thead>
+                    <tr><th>Sensor</th><th>Direction</th><th>5-min Avg</th><th>30-min Avg</th></tr>
+                </thead>
+                <tbody id="trendBody">
+                    <tr><td colspan="4">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="analytics-card">
+            <h3>📋 System Info</h3>
+            <div class="sys-info">
+                <div class="sys-row"><span>Architecture</span><span>ESP32 → Firebase → FastAPI → Dashboard</span></div>
+                <div class="sys-row"><span>ML Model</span><span>TinyML Neural Network (ESP32)</span></div>
+                <div class="sys-row"><span>Update Rate</span><span>2 seconds (WebSocket)</span></div>
+                <div class="sys-row"><span>Sensors</span><span>DHT11, MQ-2, MQ-135</span></div>
+                <div class="sys-row"><span>Team</span><span>N.R. Sharma | V.R. Tanwar</span></div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>AI-Powered Cold Storage Monitoring System | NSUT 6th Semester Major Project</p>
+        <p>Nishant Raushan Sharma (2023UCS1733) | Vanisha Raj Tanwar (2023UCS1725)</p>
+    </footer>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

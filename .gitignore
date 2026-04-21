@@ -1,0 +1,16 @@
+# Cold Storage AI -- .gitignore
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.pkl
+*.npy
+*.tflite
+ml/output/
+node_modules/
+.DS_Store
+*.log
+.venv/
+backend/.venv/
+*.db
+cold_storage.db
