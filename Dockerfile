@@ -9,5 +9,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ .
 COPY frontend/ /app/frontend/
 
-EXPOSE 8000
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Explicitly copy ML outputs to match expected relative paths
+COPY ml/output/ /ml/output/
+ENV MODEL_OUTPUT_DIR="/ml/output"
+
+EXPOSE 7860
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]
