@@ -3,9 +3,10 @@ __pycache__/
 *.pyc
 *.pyo
 .env
-*.pkl
-*.npy
-*.tflite
+
+# Allow ML outputs for production inference
+!ml/output/
+!ml/output/*
 node_modules/
 .DS_Store
 *.log

@@ -37,9 +37,9 @@ try:
     from database import SessionLocal, SensorRecord
     db_enabled = True
     print("[INIT] Database persistence connected.")
-except ImportError:
+except Exception as e:
     db_enabled = False
-    print("[INIT] No database file found, running purely in-memory.")
+    print(f"[INIT] Database connection failed: {e}. Running purely in-memory.")
 
 def push_to_db(record: dict, pred: dict):
     if not db_enabled:
