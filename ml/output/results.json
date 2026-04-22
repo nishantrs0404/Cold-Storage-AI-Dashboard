@@ -1,0 +1,67 @@
+{
+  "best": "RandomForest",
+  "auc": 0.9842,
+  "results": {
+    "LogisticRegression": {
+      "accuracy": 0.8644,
+      "precision": 0.8642,
+      "recall": 0.9046,
+      "f1": 0.8839,
+      "auc": 0.9501,
+      "cv_mean": 0.845,
+      "cv_std": 0.1308,
+      "confusion": {
+        "TP": 2711,
+        "FP": 426,
+        "FN": 286,
+        "TN": 1827
+      }
+    },
+    "RandomForest": {
+      "accuracy": 0.9293,
+      "precision": 0.946,
+      "recall": 0.9293,
+      "f1": 0.9376,
+      "auc": 0.9842,
+      "cv_mean": 0.8689,
+      "cv_std": 0.1433,
+      "confusion": {
+        "TP": 2785,
+        "FP": 159,
+        "FN": 212,
+        "TN": 2094
+      }
+    },
+    "GradientBoosting": {
+      "accuracy": 0.9269,
+      "precision": 0.9448,
+      "recall": 0.9259,
+      "f1": 0.9353,
+      "auc": 0.9839,
+      "cv_mean": 0.8765,
+      "cv_std": 0.129,
+      "confusion": {
+        "TP": 2775,
+        "FP": 162,
+        "FN": 222,
+        "TN": 2091
+      }
+    }
+  },
+  "weights": [],
+  "bias": 0.0,
+  "norm": {
+    "min": [
+      -2.0,
+      35.1162183996432,
+      50.0,
+      50.0
+    ],
+    "max": [
+      16.73054198333069,
+      100.0,
+      2111.4092179673867,
+      2082.263082457068
+    ]
+  }
+}
