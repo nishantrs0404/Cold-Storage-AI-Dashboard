@@ -13,5 +13,10 @@ COPY frontend/ /app/frontend/
 COPY ml/output/ /ml/output/
 ENV MODEL_OUTPUT_DIR="/ml/output"
 
-EXPOSE 7860
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]
+# Explicitly copy ML outputs to match expected relative paths
+COPY ml/output/ /ml/output/
+ENV MODEL_OUTPUT_DIR="/ml/output"
+
+# Expose a default port (Railway overrides this with $PORT)
+EXPOSE 8000
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
