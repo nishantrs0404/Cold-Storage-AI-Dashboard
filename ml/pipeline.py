@@ -153,21 +153,20 @@ with open(os.path.join(OUT, "model.pkl"),  "wb") as f: pickle.dump(best_model, f
 with open(os.path.join(OUT, "scaler.pkl"), "wb") as f: pickle.dump(scaler,     f)
 
 # -- 4b: Extract weights for backend logistic-regression inference  ------------
-#        (Only Logistic Regression has coef_ / intercept_; tree models don't.)
-lr_weights: list[float] = []
-lr_bias:    float       = 0.0
-
-if hasattr(best_model, "coef_"):
-    lr_weights = best_model.coef_[0].tolist()
-    lr_bias    = float(best_model.intercept_[0])
-    # FIX #5 — was: np.save(path, dict) which is undefined behaviour.
-    #           np.save is for ndarrays; use np.savez_compressed for multiple arrays.
+#        (We always export LR weights for the lightweight backend/ESP32 inference)
+lr_clf = model_defs.get("LogisticRegression")
+if lr_clf and hasattr(lr_clf, "coef_"):
+    lr_weights = lr_clf.coef_[0].tolist()
+    lr_bias    = float(lr_clf.intercept_[0])
     np.savez_compressed(
         os.path.join(OUT, "weights.npz"),
-        weights=best_model.coef_[0],
-        bias=np.array([best_model.intercept_[0]])
+        weights=lr_clf.coef_[0],
+        bias=np.array([lr_clf.intercept_[0]])
     )
-    log.info("Saved weights.npz (%d coefficients)", len(lr_weights))
+    log.info("Saved weights.npz (LogisticRegression coefficients)")
+else:
+    lr_weights = []
+    lr_bias = 0.0
 
 # -- 4c: Scaler C header for ESP32 (absolute path) ----------------------------
 params_h_path = os.path.join(OUT, "model_params.h")

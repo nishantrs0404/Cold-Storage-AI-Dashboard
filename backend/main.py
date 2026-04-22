@@ -111,9 +111,15 @@ def load_ml_model():
                 data = json.load(f)
             MIN_VALS = data["norm"]["min"]
             MAX_VALS = data["norm"]["max"]
-            WEIGHTS = data.get("weights", WEIGHTS)
-            BIAS = data.get("bias", BIAS)
-            print("[INIT] Dynamically loaded ML parameters.")
+            new_weights = data.get("weights", [])
+            if len(new_weights) == 4:
+                WEIGHTS = new_weights
+                BIAS = data.get("bias", BIAS)
+                MIN_VALS = data["norm"]["min"]
+                MAX_VALS = data["norm"]["max"]
+                print("[INIT] Dynamically loaded ML parameters.")
+            else:
+                print(f"[WARN] JSON weights invalid length ({len(new_weights)}), using defaults.")
         except Exception as e:
             print(f"[WARN] Could not load ML dynamic config: {e}")
 
