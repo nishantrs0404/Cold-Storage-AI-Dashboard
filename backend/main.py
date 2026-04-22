@@ -280,7 +280,10 @@ app = FastAPI(title="Cold Storage AI Monitor", version="2.0.0", lifespan=lifespa
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 # Serve frontend static files
-frontend_dir = os.path.join(os.path.dirname(__file__), "..", "frontend")
+frontend_dir = os.path.join(os.path.dirname(__file__), "frontend")
+if not os.path.isdir(frontend_dir):
+    frontend_dir = os.path.join(os.path.dirname(__file__), "..", "frontend")
+
 if os.path.isdir(frontend_dir):
     app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
 
