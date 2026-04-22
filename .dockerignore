@@ -19,7 +19,9 @@ __pycache__/
 
 # Ignore ML Training Pipeline & Artifacts
 # We don't need Jupyter notebooks or the 17.5k row training dataset inside the final container
-ml/
+# But we DO need ml/outputs for results.json! So we just ignore the dataset.
+ml/*.csv
+ml/*.py
 
 # Ignore Edge Hardware Code
 esp32/
